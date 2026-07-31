@@ -28,6 +28,14 @@ npm run lint       # typecheck + eslint
 npm run icons      # 重新生成 PWA 图标（scripts/generate-icons.mjs，@resvg/resvg-js）
 ```
 
+## 部署（GitHub Pages，2026-07 已上线）
+
+- **线上地址**：https://19338126485.github.io/her-time/ （HTTPS，PWA 可安装）
+- 仓库：https://github.com/19338126485/her-time （公开）
+- CI：`.github/workflows/deploy.yml`，push 到 `main` 自动 `APP_BASE_PATH=/her-time/ npx vite build` 并部署 `dist/client`。**改仓库名必须同步改 workflow 里的 APP_BASE_PATH。**
+- 子路径适配：`vite.config.ts` 的 `BASE`（`APP_BASE_PATH` 环境变量，默认 `/`）同时控制 vite base、路由 basename、图标路径。
+- gh CLI 在 `C:/Users/19338/tools/gh/gh.exe`（winget 安装失败，手动放的；不在 PATH）。
+
 ## PWA（2026-07 已接入）
 
 - `vite.config.ts` 里 `VitePWA`（restoreTitlePlugin 之后）：`registerType: 'autoUpdate'`，manifest 中/英文案与图标，`start_url`/`scope` 用 `./` 相对路径兼容任意 base path。
@@ -124,6 +132,7 @@ shared/                    平台占位目录（capabilities/static 只有 READM
 
 ## 遗留事项（按优先级）
 
+0. **已知 bug：首次 onboarding 提交后进入日历页，页面比例异常放大、底部导航栏消失**（手机 Via 浏览器实测，刷新后恢复）。已做未根治的尝试：`Layout` 的 `h-screen`→`h-dvh`、viewport 加 `viewport-fit=cover`。排查方向：onboarding 跳转 `/calendar` 时视口缩放状态残留（onboarding 页与 Layout 壳的视口差异）、SW 缓存旧版 index.html、framer-motion 初始动画与 `h-dvh` 的交互；可用 webbridge 在手机上复现后查 `visualViewport.scale`。
 1. ~~依赖瘦身~~（2026-07 已完成：未使用的 56 个 ui 组件已删，17 个杂项包 + 28 个 @radix-ui 包已卸载，仅剩 react-slot/react-switch）。
 2. ~~PWA 化~~（2026-07 已完成，见上方"PWA"一节）。
 3. **平台解绑**（部分完成：AppContainer/ErrorRender/外部监控 SDK/占位符已处理）：剩余 vite/ts/eslint preset 本地化、`process.env.CLIENT_BASE_PATH` 改 `import.meta.env`、build.sh 改标准输出、头像预设 URL 本地化到 `public/`。
