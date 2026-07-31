@@ -348,7 +348,7 @@ export default function OnboardingPage() {
               value={otherInfo}
               onChange={(e) => setOtherInfo(e.target.value)}
               placeholder="有什么想记录的都可以写在这里..."
-              className="h-24 w-full resize-none rounded-xl border border-border bg-white p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-100"
+              className="h-24 w-full resize-none rounded-xl border border-border bg-white p-3 text-base text-foreground placeholder:text-muted-foreground focus:border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-100"
               maxLength={300}
             />
             <div className="text-right text-xs text-muted-foreground">

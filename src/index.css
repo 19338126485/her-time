@@ -4,3 +4,16 @@
 @import "tw-animate-css";
 @import "./tailwind-theme.css";
 @import "./typography.css";
+
+/*
+ * 防止移动端聚焦输入框时浏览器自动放大页面（聚焦缩放会残留到下一个页面，
+ * 表现为"日历变得超级大、底部导航消失"）。iOS Safari 10+ 会忽略 viewport 的
+ * user-scalable=no，唯一可靠的跨端做法是让输入框字号 ≥ 16px。
+ */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

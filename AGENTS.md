@@ -132,7 +132,7 @@ shared/                    平台占位目录（capabilities/static 只有 READM
 
 ## 遗留事项（按优先级）
 
-0. **已知 bug：首次 onboarding 提交后进入日历页，页面比例异常放大、底部导航栏消失**（手机 Via 浏览器实测，刷新后恢复）。已做未根治的尝试：`Layout` 的 `h-screen`→`h-dvh`、viewport 加 `viewport-fit=cover`。排查方向：onboarding 跳转 `/calendar` 时视口缩放状态残留（onboarding 页与 Layout 壳的视口差异）、SW 缓存旧版 index.html、framer-motion 初始动画与 `h-dvh` 的交互；可用 webbridge 在手机上复现后查 `visualViewport.scale`。
+0. ~~已知 bug：首次 onboarding 提交后进入日历页，页面比例异常放大、底部导航消失~~（2026-08-01 已修：根因是移动端聚焦 font-size<16px 输入框时浏览器自动放大且缩放残留到下一页。修复：viewport 加 `maximum-scale=1.0, user-scalable=no` + `index.css` 全局规则移动端输入框强制 16px——iOS 10+ 忽略 user-scalable，字号是唯一可靠手段）。若仍复发，查 `visualViewport.scale` 与 SW 缓存。
 1. ~~依赖瘦身~~（2026-07 已完成：未使用的 56 个 ui 组件已删，17 个杂项包 + 28 个 @radix-ui 包已卸载，仅剩 react-slot/react-switch）。
 2. ~~PWA 化~~（2026-07 已完成，见上方"PWA"一节）。
 3. **平台解绑**（部分完成：AppContainer/ErrorRender/外部监控 SDK/占位符已处理）：剩余 vite/ts/eslint preset 本地化、`process.env.CLIENT_BASE_PATH` 改 `import.meta.env`、build.sh 改标准输出、头像预设 URL 本地化到 `public/`。
