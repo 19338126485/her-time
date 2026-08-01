@@ -1,114 +1,54 @@
-# 项目技术规范
+# 她的时间 · her-time
+
+清新柔和的月经周期记录与预测应用。**完全本地运行**：无后端、无账号、数据只存在你自己的设备上。
+
+**线上体验**：https://19338126485.github.io/her-time/
+
+手机浏览器打开后「添加到主屏幕」即可像原生 App 一样安装使用（PWA）。
+
+## 功能
+
+- **经期日历**：玫红标记实际经期、浅粉标记预测经期、灰色虚线为初始估算
+- **三档智能预测**：1 条记录用预设周期估算 → 2 条用实际间隔 → ≥3 条用最近 3 次均值 ± 偏差给出预测范围
+- **倒计时横幅**：距离下次月经天数，推迟时显示"已推迟 X 天"
+- **周期阶段**：月经期 / 卵泡期 / 排卵日（下次月经前 14 天）/ 黄体期，实际记录优先于推算
+- **每日身体记录**：痛经、血块、流量、颜色、不适、白带状态、日记，均带健康提示
+- **健康小知识**：分类百科 + 搜索，覆盖经期护理、排卵期、私处健康等
+- **本地提醒**：经期提醒（预测开始日提前 N 天）、排卵提醒、每日记录提醒、睡眠提醒
+- **隐私优先**：所有数据存 localStorage，已申请持久化存储（`navigator.storage.persist()`），无任何数据上报
 
 ## 技术栈
 
-- 前端: React 19 + TypeScript
-- 样式: Tailwind CSS v4
-- UI 组件: shadcn/ui `import { Button } from "@/components/ui/button";`
-- 图标: lucide-react `import { SearchIcon } from "lucide-react";`
-- 图表: echarts-for-react `import ReactECharts from "echarts-for-react";`
-- 动画: framer-motion `import { motion } from "framer-motion";`
-- 路由: react-router-dom `import { Link, useNavigate } from "react-router-dom";`
+React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · react-router 7 · framer-motion · lucide-react · sonner · vite-plugin-pwa
 
----
+架构要点：`records`（经期记录）为唯一事实源，预测引擎（`src/utils/cycle-store.ts`）为纯函数三档模型，无全局状态库。详见 [AGENTS.md](AGENTS.md)。
 
-## 目录结构
+## 本地开发
+
+```bash
+npm install
+npm run dev        # http://localhost:8001
+npm run lint       # typecheck + eslint
+npm run icons      # 重新生成 PWA 图标
+```
+
+## 部署
+
+push 到 `main` 分支即触发 GitHub Actions 自动构建并部署到 GitHub Pages
+（`.github/workflows/deploy.yml`，产物 `dist/client`）。
+
+## 项目结构
 
 ```
 src/
-├── index.tsx            # 入口（勿修改）
-├── app.tsx              # 路由配置（仅在 <Routes> 内增删 <Route>）
-├── index.css            # 全局样式 + 主题变量
-├── components/          # 基础 UI 组件（禁止存放业务组件）
-│   ├── layout.tsx       # 全局布局容器（含 <Outlet />）
-│   └── ui/              # shadcn/ui 内置组件（勿修改）
-├── pages/               # 页面模块（每个页面一个目录）
-│   ├── <PageName>/      # 页面目录示例
-│   │   ├── PageName.tsx        # 页面入口文件与目录同名
-│   │   └── components/         # 页面专属组件
-│   └── NotFoundPage/
-│       └── NotFoundPage.tsx
-├── hooks/               # 自定义 Hooks
-└── lib/                 # 工具函数（cn() 等）
-
-shared/
-└── static/              # 静态资源
-    ├── data/            # 数据文件（JSON）
-    └── images/          # 图片资源
+  app.tsx                路由表
+  components/            Layout、BottomTabBar、WheelPicker、DatePickerSheet、ui/
+  data/                  经期类型定义、健康知识文章
+  hooks/usePeriodData.ts 核心数据 hook
+  utils/cycle-store.ts   三档周期预测引擎（纯函数）
+  utils/date.ts          日期工具
+  pages/                 日历、知识库、我的、onboarding 等页面
 ```
-
----
-
-## 模板初始状态
-
-- `app.tsx` 首页路由指向平台内置的 `<Welcome />` 组件
-- 开发时需将 `index` 路由替换为业务首页，并在 `pages/` 下创建对应页面目录
-- `layout.tsx` 为空壳容器（仅 `<Outlet />`），需根据需求实现导航和布局
-
----
-
-## 禁止修改的文件
-
-| 文件 | 原因 |
-|------|------|
-| `src/index.tsx` | Provider 层级 + 样式引入，由模板管理 |
-| `src/components/ui/*` | shadcn/ui 内置组件，版本锁定 |
-
----
-
-## 文件放置规则
-
-| 内容类型 | 放置位置 |
-|---------|---------|
-| 新页面 | `src/pages/<PageName>/PageName.tsx` |
-| 页面专属组件 | `src/pages/<PageName>/components/` |
-| 自定义 Hooks | `src/hooks/` |
-| 工具函数 | `src/lib/` |
-| 静态数据文件 | `shared/static/data/` |
-| 静态图片 | `shared/static/images/` |
-
----
-
-## 导入路径
-
-```typescript
-// @/ 别名 → src/
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-// @shared/ 别名 → shared/
-import heroImage from "@shared/static/images/hero.png";
-import configData from "@shared/static/config.json";
-```
-
----
-
-## 路由配置
-
-- 新增页面需在 `src/app.tsx` 的 `<Routes>` 内注册 `<Route>`
-- `BrowserRouter` 已在 `index.tsx` 中配置，`app.tsx` 中**禁止**再包裹 Router
-
----
-
-## 主题变量
-
-主题色定义在 `src/index.css`，通过 `:root` CSS 变量 + `@theme inline` 注册到 Tailwind。
-
-| 用途 | Tailwind 类 | CSS 变量 |
-|------|------------|----------|
-| 页面背景 | `bg-background` | `--background` |
-| 主文本 | `text-foreground` | `--foreground` |
-| 卡片背景 | `bg-card` | `--card` |
-| 次要文本 | `text-muted-foreground` | `--muted-foreground` |
-| 主色 | `bg-primary` / `text-primary` | `--primary` |
-| 强调色 | `bg-accent` | `--accent` |
-| 边框 | `border-border` | `--border` |
-| 危险色 | `text-destructive` | `--destructive` |
-| 图表色 | `bg-chart-1` ~ `bg-chart-5` | `--chart-1` ~ `--chart-5` |
-
-HSL 格式使用**空格分隔**：`--primary: hsl(150 60% 40%);`
-
----
 
 ## 许可证
 
