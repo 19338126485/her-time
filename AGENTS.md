@@ -34,8 +34,23 @@ npm run icons      # 重新生成 PWA 图标（scripts/generate-icons.mjs，@res
 - 仓库：https://github.com/19338126485/her-time （公开）
 - CI：`.github/workflows/deploy.yml`，push 到 `main` 自动 `APP_BASE_PATH=/her-time/ npx vite build` 并部署 `dist/client`。**改仓库名必须同步改 workflow 里的 APP_BASE_PATH。**
 - 子路径适配：`vite.config.ts` 的 `BASE`（`APP_BASE_PATH` 环境变量，默认 `/`）同时控制 vite base、路由 basename、图标路径。
-- gh CLI 在 `C:/Users/19338/tools/gh/gh.exe`（winget 安装失败，手动放的；不在 PATH）。
+- gh CLI 在 `C:/Users/19338/tools/gh/gh.exe`（已加入用户 PATH）。
 - **许可证：AGPL-3.0**（`LICENSE`，版权行"她的时间项目贡献者们"）。策略是先严后松——衍生作品（含部署为网络服务）必须同许可证开源；与原作者确认意向后可放宽为 MIT 等（宽松方向随时可改，反向不行）。`package.json` 的 name 已改为 `her-time`、`license: AGPL-3.0-only`。
+
+## Android 打包（Capacitor，2026-08 已打通）
+
+- 工具链（全在 D 盘）：JDK 21 → `D:/software/jdk21`（用户级 `JAVA_HOME`；注意 Capacitor 7 要 21，`D:/software/jdk17` 是早期装错的遗留，可删）、Android SDK → `D:/software/android-sdk`（platforms;android-35 / build-tools;35.0.0，`ANDROID_HOME` 已设）、Gradle 缓存 → `D:/software/gradle`
+- **中文路径坑**：项目路径含中文导致 Gradle 构建乱码失败，已用 ASCII 目录联接绕过：`D:\hertime-build` → 项目根。**构建一律在 `D:/hertime-build` 里跑，不要直接在中文路径下跑 gradlew**
+- 日常打新包：
+  ```bash
+  cd D:/hertime-build
+  npx vite build && npx cap sync android
+  cd android && JAVA_HOME=D:/software/jdk21 ANDROID_HOME=D:/software/android-sdk GRADLE_USER_HOME=D:/software/gradle cmd //c "gradlew.bat assembleDebug"
+  ```
+  产物：`android/app/build/outputs/apk/debug/app-debug.apk`
+- 当前为 debug 签名包，可直接侧载安装；正式发布需在 `android/` 里配签名 keystore 打 release 包
+- `android/` 和 `capacitor.config.ts` 未提交 git（生成物；如要提交注意 android/ 体积）
+- **警示**：不要让子代理用 `yes > 文件` 制造无限输入——曾因此写爆 D 盘 159GB（`sdkmanager --licenses` 应用 `printf 'y\n%.0s' {1..30} |` 或交互确认）
 
 ## PWA（2026-07 已接入）
 
