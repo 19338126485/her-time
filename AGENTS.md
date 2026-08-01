@@ -132,7 +132,7 @@ shared/                    平台占位目录（capabilities/static 只有 READM
 
 ## 遗留事项（按优先级）
 
-0. ~~已知 bug：首次 onboarding 提交后进入日历页，页面比例异常放大、底部导航消失~~（2026-08-01 已修：根因是移动端聚焦 font-size<16px 输入框时浏览器自动放大且缩放残留到下一页。修复：viewport 加 `maximum-scale=1.0, user-scalable=no` + `index.css` 全局规则移动端输入框强制 16px——iOS 10+ 忽略 user-scalable，字号是唯一可靠手段）。若仍复发，查 `visualViewport.scale` 与 SW 缓存。
+0. ~~已知 bug：首次 onboarding 提交后进入日历页，页面比例异常放大、底部导航消失~~（2026-08-01 已修复。**真根因**：Layout 用自己的 `usePeriodData` 实例读 onboarding 状态，多实例 hook 互不通信——OnboardingPage 提交后 Layout 永远以为未完成，不渲染带 `max-w-md` 约束和底部导航的外壳，日历铺满全屏看起来像"放大"。与视口缩放无关（诊断 scale=1.00）。修复：Layout 改为每次路由变化时直接重读 localStorage。此前输入框 ≥16px 的改动保留，作为 iOS 聚焦缩放的正确防御）。**教训：多实例 hook 的状态不能跨组件当单一事实源用。**
 1. ~~依赖瘦身~~（2026-07 已完成：未使用的 56 个 ui 组件已删，17 个杂项包 + 28 个 @radix-ui 包已卸载，仅剩 react-slot/react-switch）。
 2. ~~PWA 化~~（2026-07 已完成，见上方"PWA"一节）。
 3. **平台解绑**（部分完成：AppContainer/ErrorRender/外部监控 SDK/占位符已处理）：剩余 vite/ts/eslint preset 本地化、`process.env.CLIENT_BASE_PATH` 改 `import.meta.env`、build.sh 改标准输出、头像预设 URL 本地化到 `public/`。

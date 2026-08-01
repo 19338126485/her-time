@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { scopedStorage } from '@lark-apaas/client-toolkit-lite';
 import { STORAGE_KEY_ONBOARDING } from '@/data/period';
-import { usePeriodData } from '@/hooks/usePeriodData';
 import BottomTabBar from '@/components/BottomTabBar';
 
 /**
  * 直接从 localStorage 同步读取 onboarding 完成状态，
- * 用于路由守卫的初始判断，避免依赖 React state 异步更新导致的重定向竞态。
+ * 作为路由守卫与外壳渲染的唯一权威来源。
+ * （不能用 usePeriodData 的 React state——多实例 hook 之间不同步，
+ * OnboardingPage 提交后 Layout 实例永远拿不到 true，外壳不渲染：
+ * 日历页失去 max-w-md 约束铺满全屏、底部导航消失）
  */
 function readOnboardingCompleted(): boolean {
   try {
@@ -26,32 +28,20 @@ function readOnboardingCompleted(): boolean {
 export const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { onboardingCompleted } = usePeriodData();
-
-  // 用 ref 跟踪是否已执行过初始守卫，避免首次渲染时 state 还没初始化导致的跳转抖动
-  const hasGuarded = useRef(false);
-  // 用本地 state 跟踪 localStorage 的同步值，作为守卫的权威来源
   const [storageCompleted, setStorageCompleted] = useState<boolean>(() =>
     readOnboardingCompleted()
   );
 
-  // 当 React state 的 onboardingCompleted 变化时，同步更新本地守卫状态
-  // （React state 变化意味着 completeOnboarding 已经把数据写入了 localStorage）
-  useEffect(() => {
-    if (onboardingCompleted !== storageCompleted) {
-      setStorageCompleted(onboardingCompleted);
-    }
-  }, [onboardingCompleted, storageCompleted]);
-
-  // onboarding 守卫 —— 只在路径变化时执行一次判断
+  // onboarding 守卫：每次路径变化时从 localStorage 重读权威状态
+  // （completeOnboarding 同步写入 localStorage 后才跳转，此处必然读到最新值）
   useEffect(() => {
     const completed = readOnboardingCompleted();
+    setStorageCompleted(completed);
     if (!completed && location.pathname !== '/onboarding') {
       navigate('/onboarding', { replace: true });
     } else if (completed && location.pathname === '/onboarding') {
       navigate('/calendar', { replace: true });
     }
-    hasGuarded.current = true;
   }, [location.pathname, navigate]);
 
   const isMainTab =
