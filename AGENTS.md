@@ -35,6 +35,7 @@ npm run icons      # 重新生成 PWA 图标（scripts/generate-icons.mjs，@res
 - CI：`.github/workflows/deploy.yml`，push 到 `main` 自动 `APP_BASE_PATH=/her-time/ npx vite build` 并部署 `dist/client`。**改仓库名必须同步改 workflow 里的 APP_BASE_PATH。**
 - 子路径适配：`vite.config.ts` 的 `BASE`（`APP_BASE_PATH` 环境变量，默认 `/`）同时控制 vite base、路由 basename、图标路径。
 - gh CLI 在 `C:/Users/19338/tools/gh/gh.exe`（winget 安装失败，手动放的；不在 PATH）。
+- **许可证：AGPL-3.0**（`LICENSE`，版权行"她的时间项目贡献者们"）。策略是先严后松——衍生作品（含部署为网络服务）必须同许可证开源；与原作者确认意向后可放宽为 MIT 等（宽松方向随时可改，反向不行）。`package.json` 的 name 已改为 `her-time`、`license: AGPL-3.0-only`。
 
 ## PWA（2026-07 已接入）
 
@@ -80,7 +81,7 @@ shared/                    平台占位目录（capabilities/static 只有 READM
 | `/profile/feedback` | FeedbackPage | ✅ mailto 至 3961793751@qq.com |
 | `*` | NotFoundPage | ✅ |
 
-已删除的死代码：`pages/AiAssistantPage/`、`pages/ExamplePage/`、`use-mobile.ts`、各模块未使用的导出函数。
+已删除的死代码：`pages/AiAssistantPage/`、`pages/ExamplePage/`、`use-mobile.ts`、`public/icons.svg`、各模块未使用的导出函数。
 
 ## 数据层（重要，先读再改）
 

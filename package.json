@@ -1,7 +1,9 @@
 {
-  "name": "miaoda-vite-react-app",
-  "version": "0.1.0",
+  "name": "her-time",
+  "version": "1.0.0",
+  "description": "她的时间 — 完全本地运行的月经周期记录与预测 PWA",
   "private": true,
+  "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
