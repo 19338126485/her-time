@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+// 发布签名：凭据放在 D:/software/keys/keystore.properties（不入库）。
+// 文件不存在时 release 构建会报明确错误；debug 构建不受影响。
+def keystorePropertiesFile = rootProject.file('../../software/keys/keystore.properties')
+if (!keystorePropertiesFile.exists()) {
+    keystorePropertiesFile = new File('D:/software/keys/keystore.properties')
+}
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "app.hertime.period"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,10 +27,19 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file(keystoreProperties['storeFile'] ?: 'missing-keystore')
+            keyAlias keystoreProperties['keyAlias']
+            storePassword keystoreProperties['storePassword']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }

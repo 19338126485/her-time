@@ -48,7 +48,7 @@ npm run icons      # 重新生成 PWA 图标（scripts/generate-icons.mjs，@res
   cd android && JAVA_HOME=D:/software/jdk21 ANDROID_HOME=D:/software/android-sdk GRADLE_USER_HOME=D:/software/gradle cmd //c "gradlew.bat assembleDebug"
   ```
   产物：`android/app/build/outputs/apk/debug/app-debug.apk`
-- 当前为 debug 签名包，可直接侧载安装；正式发布需在 `android/` 里配签名 keystore 打 release 包
+- 当前已配正式签名：keystore 在 `D:/software/keys/her-time.keystore`，凭据在 `D:/software/keys/keystore.properties`（均不入库，**务必异地备份，丢失则永远无法覆盖升级**）；release 构建命令同 debug，把 `assembleDebug` 换成 `assembleRelease` 即可，产物 `android/app/build/outputs/apk/release/app-release.apk`
 - `android/` 和 `capacitor.config.ts` 已提交 git（Capacitor 官方建议提交原生工程；构建产物被 android/.gitignore 排除）
 - **警示**：不要让子代理用 `yes > 文件` 制造无限输入——曾因此写爆 D 盘 159GB（`sdkmanager --licenses` 应用 `printf 'y\n%.0s' {1..30} |` 或交互确认）
 
