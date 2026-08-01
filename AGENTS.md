@@ -49,7 +49,7 @@ npm run icons      # 重新生成 PWA 图标（scripts/generate-icons.mjs，@res
   ```
   产物：`android/app/build/outputs/apk/debug/app-debug.apk`
 - 当前为 debug 签名包，可直接侧载安装；正式发布需在 `android/` 里配签名 keystore 打 release 包
-- `android/` 和 `capacitor.config.ts` 未提交 git（生成物；如要提交注意 android/ 体积）
+- `android/` 和 `capacitor.config.ts` 已提交 git（Capacitor 官方建议提交原生工程；构建产物被 android/.gitignore 排除）
 - **警示**：不要让子代理用 `yes > 文件` 制造无限输入——曾因此写爆 D 盘 159GB（`sdkmanager --licenses` 应用 `printf 'y\n%.0s' {1..30} |` 或交互确认）
 
 ## PWA（2026-07 已接入）
