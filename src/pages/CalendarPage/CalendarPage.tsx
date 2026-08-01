@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Droplets } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -52,6 +52,15 @@ export default function CalendarPage() {
     const end = new Date(now.getFullYear() + 2, now.getMonth(), 28);
     return { start, end };
   });
+
+  // 【临时诊断】排查移动端"进入日历页异常放大"bug：上报视口数据，确认后删除
+  useEffect(() => {
+    const vv = window.visualViewport;
+    toast.info(
+      `诊断: scale=${vv?.scale?.toFixed(2)} vvW=${Math.round(vv?.width ?? 0)} iw=${window.innerWidth} cw=${document.documentElement.clientWidth} dpr=${window.devicePixelRatio}`,
+      { duration: 30000 }
+    );
+  }, []);
 
   const canGoPrev = useMemo(() => {
     const firstDate = new Date(viewYear, viewMonth, 1);
