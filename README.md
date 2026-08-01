@@ -107,3 +107,12 @@ import configData from "@shared/static/config.json";
 | 图表色 | `bg-chart-1` ~ `bg-chart-5` | `--chart-1` ~ `--chart-5` |
 
 HSL 格式使用**空格分隔**：`--primary: hsl(150 60% 40%);`
+
+---
+
+## 许可证
+
+Copyright (C) 2026 她的时间项目贡献者们（her-time contributors）
+
+本项目采用 [GNU Affero General Public License v3.0](LICENSE)（AGPL-3.0）开源：
+你可以自由使用、修改、分发本项目，但衍生作品（包括基于本项目部署的网络服务）必须以相同许可证开源。
