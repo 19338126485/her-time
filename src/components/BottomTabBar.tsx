@@ -42,8 +42,9 @@ export default function BottomTabBar() {
           );
         })}
       </div>
-      {/* iOS 安全区域 */}
-      <div className="h-[env(safe-area-inset-bottom)]" />
+      {/* 安全区域：iOS 用 env()；Android WebView env() 恒为 0，
+          由 @capacitor-community/safe-area 注入的 CSS 变量兜底 */}
+      <div className="h-[max(env(safe-area-inset-bottom),var(--safe-area-inset-bottom,0px))]" />
     </nav>
   );
 }
